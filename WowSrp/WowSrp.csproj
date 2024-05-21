@@ -19,7 +19,7 @@
 
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))</PackageReleaseNotes>
 
-        <RepositoryUrl>https://github.com/gtker/wow_messages_csharp</RepositoryUrl>
+        <RepositoryUrl>https://github.com/gtker/wow_srp_csharp</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <RootNamespace>WowSrp</RootNamespace>
     </PropertyGroup>
