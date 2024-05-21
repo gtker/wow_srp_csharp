@@ -12,7 +12,18 @@ namespace WowSrp
     /// </summary>
     public static class Integrity
     {
+        /// <summary>
+        ///     Amount of bytes returned by <see cref="RandomIntegritySalt" /> and required by the salts for
+        ///     the various checks.
+        /// </summary>
+        public const int IntegritySaltSize = 16;
+
         private static readonly byte[] Zero = new byte[Constants.ProofLength];
+
+        /// <summary>
+        ///     Convenience function to return random salt.
+        /// </summary>
+        public static byte[] RandomIntegritySalt() => Utils.RandomizedArray(IntegritySaltSize);
 
         /// <summary>
         ///     Check where are files are concatenated into a single array.

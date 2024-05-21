@@ -49,12 +49,7 @@ namespace WowSrp
         /// <summary>
         ///     Convenience function to return random salt.
         /// </summary>
-        public static byte[] RandomPinSalt()
-        {
-            var buf = new byte[PinSaltSize];
-            Utils.RandomBytes(buf);
-            return buf;
-        }
+        public static byte[] RandomPinSalt() => Utils.RandomizedArray(PinSaltSize);
 
         /// <summary>
         ///     Hash sent by the client in
