@@ -83,6 +83,12 @@ namespace WowSrp
                 throw new ArgumentException("width can not be 0", nameof(width));
             }
 
+            if (height * width != data.Length)
+            {
+                throw new ArgumentException(
+                    $"data.Length {data.Length} must be same as height {height} * width {width}", nameof(data));
+            }
+
             DigitCount = digitCount;
             Height = height;
             Width = width;
