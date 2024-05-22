@@ -6,7 +6,6 @@
 
         <Authors>Gtker</Authors>
         <VersionPrefix>0.1.0</VersionPrefix>
-        <VersionSuffix>alpha</VersionSuffix>
         <Title>WoW SRP</Title>
         <Description>
             Library for most cryptographic algorithms used on World of Warcraft 1.0 through to 3.3.5.
