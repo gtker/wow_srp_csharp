@@ -15,7 +15,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Creates a client header.
         /// </summary>
-        public byte[] CreateClientHeader(int size, int opcode)
+        public byte[] CreateClientHeader(uint size, uint opcode)
         {
             var b = new byte[Constants.ClientHeaderLength];
 
@@ -30,7 +30,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(Span<byte> w, int size, int opcode)
+        public void WriteClientHeader(Span<byte> w, uint size, uint opcode)
         {
             var b = CreateClientHeader(size, opcode);
             b.CopyTo(w);
@@ -39,7 +39,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(byte[] w, int size, int opcode)
+        public void WriteClientHeader(byte[] w, uint size, uint opcode)
         {
             var b = CreateClientHeader(size, opcode);
             b.CopyTo(w, 0);
@@ -48,7 +48,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(Stream w, int size, int opcode)
+        public void WriteClientHeader(Stream w, uint size, uint opcode)
         {
             var b = CreateClientHeader(size, opcode);
             w.Write(b);
@@ -57,7 +57,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public async Task WriteClientHeaderAsync(Stream w, int size, int opcode,
+        public async Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
             CancellationToken cancellationToken = default)
         {
             var b = CreateClientHeader(size, opcode);

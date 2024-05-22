@@ -33,8 +33,10 @@ namespace WowSrp
 
         internal const int ServerOpcodeLength = 2;
         internal const int ServerNormalSizeLength = 2;
+        internal const int ServerNormalHeaderLength = ServerOpcodeLength + ServerNormalSizeLength;
 
         internal const int ServerWrathLargeSizeLength = 3;
+        internal const int ServerWrathHeaderLength = ServerOpcodeLength + ServerWrathLargeSizeLength;
 
         internal const int ClientOpcodeLength = 4;
         internal const int ClientSizeLength = 2;

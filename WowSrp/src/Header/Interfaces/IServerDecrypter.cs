@@ -14,14 +14,12 @@ namespace WowSrp.Header
     {
         internal bool IsWrath();
 
-        private int ServerSizeFieldLength(byte span)
+        private HeaderData ReadUnencryptedHeader(Span<byte> span)
         {
-            if (IsWrath() && (span & 0x80) == 1)
-            {
-                return Constants.ServerWrathLargeSizeLength;
-            }
-
-            return Constants.ServerNormalSizeLength;
+            var serverSizeLength =
+                span.Length == 5 ? Constants.ServerWrathLargeSizeLength : Constants.ServerNormalSizeLength;
+            return Utils.ReadSpans(span[..serverSizeLength],
+                span[serverSizeLength..]);
         }
 
         /// <summary>
@@ -29,11 +27,22 @@ namespace WowSrp.Header
         /// </summary>
         public HeaderData ReadServerHeader(Span<byte> span)
         {
-            var serverSizeLength = ServerSizeFieldLength(span[0]);
-            var newSpan = span[..(serverSizeLength + Constants.ServerOpcodeLength)];
-            Decrypt(newSpan);
+            if (!IsWrath())
+            {
+                var newBytes = span[..Constants.ServerNormalHeaderLength];
+                Decrypt(newBytes);
 
-            return Utils.ReadSpans(newSpan[..serverSizeLength], newSpan[serverSizeLength..]);
+                return ReadUnencryptedHeader(newBytes);
+            }
+
+            Decrypt(span[..1]);
+            var serverSizeLength = Utils.ServerSizeFieldLength(span[0], IsWrath());
+
+            span[0] = Utils.ClearBigHeader(span[0]);
+            var newSpan = span[..(serverSizeLength + Constants.ServerOpcodeLength)];
+            Decrypt(newSpan[1..]);
+
+            return ReadUnencryptedHeader(newSpan);
         }
 
         /// <summary>
@@ -41,26 +50,29 @@ namespace WowSrp.Header
         /// </summary>
         public HeaderData ReadServerHeader(Stream r)
         {
-            // Do all this because Wrath server messages can have a 3 byte size field
-            // Vanilla and TBC may suffer slightly but only when reading messages
-            // sent by the server (e.g. on the client)
+            if (!IsWrath())
+            {
+                var buf = new byte[Constants.ServerNormalHeaderLength];
+                r.ReadUntilBufferFull(buf);
+                return ReadServerHeader(buf);
+            }
+
             var firstByte = new byte[1];
 
             r.ReadUntilBufferFull(firstByte);
-            var serverSizeLength = ServerSizeFieldLength(firstByte[0]);
+            Decrypt(firstByte);
+            var serverSizeLength = Utils.ServerSizeFieldLength(firstByte[0], IsWrath());
 
             var remainingHeader = new byte[serverSizeLength + Constants.ServerOpcodeLength - 1];
             r.ReadUntilBufferFull(remainingHeader);
+            Decrypt(remainingHeader);
 
             Span<byte> header = stackalloc byte[serverSizeLength + Constants.ServerOpcodeLength];
 
-            header[0] = firstByte[0];
-            for (var i = 0; i < remainingHeader.Length; i++)
-            {
-                header[i + 1] = remainingHeader[i];
-            }
+            header[0] = Utils.ClearBigHeader(firstByte[0]);
+            remainingHeader.CopyTo(header[1..]);
 
-            return ReadServerHeader(header);
+            return ReadUnencryptedHeader(header);
         }
 
         /// <summary>
@@ -68,26 +80,29 @@ namespace WowSrp.Header
         /// </summary>
         public async Task<HeaderData> ReadServerHeaderAsync(Stream r, CancellationToken cancellationToken = default)
         {
-            // Do all this because Wrath server messages can have a 3 byte size field
-            // Vanilla and TBC may suffer slightly but only when reading messages
-            // sent by the server (e.g. on the client)
+            if (!IsWrath())
+            {
+                var buf = new byte[Constants.ServerNormalHeaderLength];
+                await r.ReadUntilBufferFullAsync(buf, cancellationToken).ConfigureAwait(false);
+                return ReadServerHeader(buf);
+            }
+
             var firstByte = new byte[1];
 
             await r.ReadUntilBufferFullAsync(firstByte, cancellationToken).ConfigureAwait(false);
-            var serverSizeLength = ServerSizeFieldLength(firstByte[0]);
+            Decrypt(firstByte);
+            var serverSizeLength = Utils.ServerSizeFieldLength(firstByte[0], IsWrath());
 
             var remainingHeader = new byte[serverSizeLength + Constants.ServerOpcodeLength - 1];
             await r.ReadUntilBufferFullAsync(remainingHeader, cancellationToken).ConfigureAwait(false);
+            Decrypt(remainingHeader);
 
             var header = new byte[serverSizeLength + Constants.ServerOpcodeLength];
 
-            header[0] = firstByte[0];
-            for (var i = 0; i < remainingHeader.Length; i++)
-            {
-                header[i + 1] = remainingHeader[i];
-            }
+            header[0] =Utils.ClearBigHeader(firstByte[0]);
+            remainingHeader.CopyTo(header.AsSpan()[1..]);
 
-            return ReadServerHeader(header);
+            return ReadUnencryptedHeader(header);
         }
     }
 }

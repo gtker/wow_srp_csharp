@@ -14,26 +14,20 @@ namespace WowSrp.Header
     {
         internal bool IsWrath();
 
-        private int ServerSizeFieldSize(int size)
-        {
-            if (IsWrath() && size > 0x7FFF)
-            {
-                return Constants.ServerWrathLargeSizeLength;
-            }
-
-            return Constants.ServerNormalSizeLength;
-        }
-
-
         /// <summary>
         ///     Create s server header.
         /// </summary>
-        public byte[] CreateServerHeader(int size, int opcode)
+        public byte[] CreateServerHeader(uint size, uint opcode)
         {
-            var serverSizeField = ServerSizeFieldSize(size);
+            var serverSizeField = Utils.ServerSizeFieldSize(size, IsWrath());
             var b = new byte[serverSizeField + Constants.ServerOpcodeLength];
 
             Utils.WriteBigEndian(size, b.AsSpan()[..serverSizeField]);
+            if (IsWrath() && size > 0x7FFF)
+            {
+                b[0] = Utils.SetBigHeader(b[0]);
+            }
+
             Utils.WriteLittleEndian(opcode, b.AsSpan()[serverSizeField..]);
 
             Encrypt(b);
@@ -44,7 +38,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a server header.
         /// </summary>
-        public void WriteServerHeader(Span<byte> w, int size, int opcode)
+        public void WriteServerHeader(Span<byte> w, uint size, uint opcode)
         {
             var b = CreateServerHeader(size, opcode);
             b.CopyTo(w);
@@ -53,7 +47,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a server header.
         /// </summary>
-        public void WriteServerHeader(byte[] w, int size, int opcode)
+        public void WriteServerHeader(byte[] w, uint size, uint opcode)
         {
             var b = CreateServerHeader(size, opcode);
             b.CopyTo(w, 0);
@@ -62,7 +56,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a server header.
         /// </summary>
-        public void WriteServerHeader(Stream w, int size, int opcode)
+        public void WriteServerHeader(Stream w, uint size, uint opcode)
         {
             var b = CreateServerHeader(size, opcode);
             w.Write(b);
@@ -71,7 +65,7 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a server header.
         /// </summary>
-        public async Task WriteServerHeaderAsync(Stream w, int size, int opcode,
+        public async Task WriteServerHeaderAsync(Stream w, uint size, uint opcode,
             CancellationToken cancellationToken = default)
         {
             var b = CreateServerHeader(size, opcode);

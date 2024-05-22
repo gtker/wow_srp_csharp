@@ -8,15 +8,15 @@ namespace WowSrp.Header
         /// <summary>
         ///     Size of the message including the opcode field.
         /// </summary>
-        public int Size { get; }
+        public uint Size { get; }
 
         /// <summary>
         ///     Opcode of the message.
         ///     Exact meaning depends on whether this is from the client or server.
         /// </summary>
-        public int Opcode { get; }
+        public uint Opcode { get; }
 
-        internal HeaderData(int size, int opcode)
+        internal HeaderData(uint size, uint opcode)
         {
             Size = size;
             Opcode = opcode;

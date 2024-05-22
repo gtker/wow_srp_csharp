@@ -64,12 +64,12 @@ namespace WowSrp.Internal
             return a;
         }
 
-        public static int ReadLittleEndian(ReadOnlySpan<byte> span)
+        public static uint ReadLittleEndian(ReadOnlySpan<byte> span)
         {
-            var value = 0;
+            uint value = 0;
             for (var i = 0; i < span.Length; i++)
             {
-                value |= span[i] << (i * 8);
+                value |= (uint)span[i] << (i * 8);
             }
 
             return value;
@@ -97,19 +97,19 @@ namespace WowSrp.Internal
             }
         }
 
-        public static int ReadBigEndian(ReadOnlySpan<byte> span)
+        public static uint ReadBigEndian(ReadOnlySpan<byte> span)
         {
-            var value = 0;
+            uint value = 0;
             for (var i = 0; i < span.Length; i++)
             {
                 var opposite = span.Length - i - 1;
-                value |= span[i] << (opposite * 8);
+                value |= (uint)span[i] << (opposite * 8);
             }
 
             return value;
         }
 
-        public static void WriteBigEndian(int value, Span<byte> span)
+        public static void WriteBigEndian(uint value, Span<byte> span)
         {
             for (var i = 0; i < span.Length; i++)
             {
@@ -123,6 +123,33 @@ namespace WowSrp.Internal
 
         public static HeaderData ReadSpans(ReadOnlySpan<byte> size, ReadOnlySpan<byte> opcode) =>
             new HeaderData(ReadBigEndian(size), ReadLittleEndian(opcode));
+
+        public static bool HasBigHeader(byte b) => (b & 0x80) != 0;
+
+        public static byte ClearBigHeader(byte b) => (byte)(b & 0x7F);
+
+        public static byte SetBigHeader(byte b) => (byte)(b | 0x80);
+
+        public static int ServerSizeFieldLength(byte span, bool isWrath)
+        {
+            if (isWrath && HasBigHeader(span))
+            {
+                return Constants.ServerWrathLargeSizeLength;
+            }
+
+            return Constants.ServerNormalSizeLength;
+        }
+
+        public static int ServerSizeFieldSize(uint size, bool isWrath)
+        {
+            if (isWrath && size > 0x7FFF)
+            {
+                return Constants.ServerWrathLargeSizeLength;
+            }
+
+            return Constants.ServerNormalSizeLength;
+        }
+
 
         public static byte[] ConcatArrays(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
         {
