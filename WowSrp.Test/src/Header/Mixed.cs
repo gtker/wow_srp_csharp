@@ -168,36 +168,6 @@ public class Mixed
         }
     }
 
-    [Test]
-    public void VanillaServer()
-    {
-        var contents = File.ReadAllLines("./tests/encryption/vanilla_server.txt");
-        Assert.That(contents, Is.Not.Empty);
-
-        foreach (var line in contents)
-        {
-            var split = line.Split(' ');
-
-            var data = TestUtils.StringToByteArray(split[0]);
-            var originalData = data.Clone();
-            var size = uint.Parse(split[1]);
-            var opcode = uint.Parse(split[2]);
-            var decrypt =
-                new VanillaDecryption(SessionKeyReg);
-            var header = decrypt.ReadServerHeader(data);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(header.Size, Is.EqualTo(size));
-                Assert.That(header.Opcode, Is.EqualTo(opcode));
-            });
-            var encrypt = new VanillaEncryption(SessionKeyReg);
-            encrypt.WriteServerHeader(data, size, opcode);
-
-            Assert.That(data, Is.EqualTo(originalData));
-        }
-    }
-
     private async Task ClientHelper(string path, Func<byte[], (IClientDecrypter, IClientEncrypter)> create)
     {
         var contents = File.ReadAllLines(path);
@@ -300,6 +270,13 @@ public class Mixed
 
             Assert.That(data, Is.EqualTo(originalData));
         }
+    }
+
+    [Test]
+    public async Task VanillaServer()
+    {
+        await ServerHelper("./tests/encryption/vanilla_server.txt",
+            sessionKey => (new VanillaDecryption(sessionKey), new VanillaEncryption(sessionKey)));
     }
 
     [Test]
