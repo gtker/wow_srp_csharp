@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using WowSrp.Internal;
 
 namespace WowSrp.Header
@@ -19,6 +22,17 @@ namespace WowSrp.Header
                 HeaderImplementation.DropAmount);
         }
 
-        void IDecrypter.Decrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
+        /// <inheritdoc cref="IDecrypter.Decrypt" />
+        public void Decrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
+
+        /// <inheritdoc cref="IClientDecrypter.ReadClientHeader(Span&lt;byte&gt;)" />
+        public HeaderData ReadClientHeader(Span<byte> span) => HeaderImplementations.ReadClientHeader(span, Decrypt);
+
+        /// <inheritdoc cref="IClientDecrypter.ReadClientHeader(Stream)" />
+        public HeaderData ReadClientHeader(Stream r) => HeaderImplementations.ReadClientHeader(r, Decrypt);
+
+        /// <inheritdoc cref="IClientDecrypter.ReadClientHeaderAsync(Stream, CancellationToken)" />
+        public Task<HeaderData> ReadClientHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
+            HeaderImplementations.ReadClientHeaderAsync(r, Decrypt, cancellationToken);
     }
 }

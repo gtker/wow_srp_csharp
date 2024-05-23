@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using WowSrp.Internal;
 
 namespace WowSrp.Header
 {
@@ -15,53 +14,27 @@ namespace WowSrp.Header
         /// <summary>
         ///     Creates a client header.
         /// </summary>
-        public byte[] CreateClientHeader(uint size, uint opcode)
-        {
-            var b = new byte[Constants.ClientHeaderLength];
-
-            Utils.WriteBigEndian(size, b.AsSpan()[..Constants.ClientSizeLength]);
-            Utils.WriteLittleEndian(opcode, b.AsSpan()[Constants.ClientSizeLength..]);
-
-            Encrypt(b);
-
-            return b;
-        }
+        byte[] CreateClientHeader(uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(Span<byte> w, uint size, uint opcode)
-        {
-            var b = CreateClientHeader(size, opcode);
-            b.CopyTo(w);
-        }
+        void WriteClientHeader(Span<byte> w, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(byte[] w, uint size, uint opcode)
-        {
-            var b = CreateClientHeader(size, opcode);
-            b.CopyTo(w, 0);
-        }
+        void WriteClientHeader(byte[] w, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public void WriteClientHeader(Stream w, uint size, uint opcode)
-        {
-            var b = CreateClientHeader(size, opcode);
-            w.Write(b);
-        }
+        void WriteClientHeader(Stream w, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        public async Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
-            CancellationToken cancellationToken = default)
-        {
-            var b = CreateClientHeader(size, opcode);
-            await w.WriteAsync(b, cancellationToken).ConfigureAwait(false);
-        }
+        Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
+            CancellationToken cancellationToken = default);
     }
 }

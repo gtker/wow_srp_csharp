@@ -157,12 +157,12 @@ public class Mixed
 
             var encrypt = new TbcEncryption(sessionKey);
 
-            ((IEncrypter)encrypt).Encrypt(data);
+            encrypt.Encrypt(data);
             Assert.That(data, Is.EqualTo(expected));
 
             var decrypt =
                 new TbcDecryption(sessionKey);
-            ((IDecrypter)decrypt).Decrypt(data);
+            decrypt.Decrypt(data);
 
             Assert.That(data, Is.EqualTo(originalData));
         }
@@ -184,7 +184,7 @@ public class Mixed
             var opcode = uint.Parse(split[2]);
             var decrypt =
                 new VanillaDecryption(SessionKeyReg);
-            var header = ((IServerDecrypter)decrypt).ReadServerHeader(data);
+            var header = decrypt.ReadServerHeader(data);
 
             Assert.Multiple(() =>
             {
@@ -192,7 +192,7 @@ public class Mixed
                 Assert.That(header.Opcode, Is.EqualTo(opcode));
             });
             var encrypt = new VanillaEncryption(SessionKeyReg);
-            ((IServerEncrypter)encrypt).WriteServerHeader(data, size, opcode);
+            encrypt.WriteServerHeader(data, size, opcode);
 
             Assert.That(data, Is.EqualTo(originalData));
         }

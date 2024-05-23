@@ -1,3 +1,9 @@
+# 0.1.3 - 2024-05-23
+
+## Added
+
+* Implicit implementations for all header classes.
+
 # 0.1.2 - 2024-05-22
 
 ## Added

@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using WowSrp.Internal;
 
 namespace WowSrp.Header
@@ -19,6 +22,34 @@ namespace WowSrp.Header
                 HeaderImplementation.DropAmount);
         }
 
-        void IEncrypter.Encrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
+        /// <inheritdoc cref="IEncrypter.Encrypt" />
+        public void Encrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
+
+        /// <inheritdoc cref="IClientEncrypter.CreateClientHeader" />
+        public byte[] CreateClientHeader(uint size, uint opcode) =>
+            HeaderImplementations.CreateClientHeader(size, opcode, Encrypt);
+
+        /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(Span&lt;byte&gt;, uint, uint)" />
+        public void WriteClientHeader(Span<byte> w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+        }
+
+        /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(byte[], uint, uint)" />
+        public void WriteClientHeader(byte[] w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+        }
+
+        /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(Stream, uint, uint)" />
+        public void WriteClientHeader(Stream w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+        }
+
+        /// <inheritdoc cref="IClientEncrypter.WriteClientHeaderAsync(Stream, uint, uint, CancellationToken)" />
+        public Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
+            CancellationToken cancellationToken = default) =>
+            HeaderImplementations.WriteClientHeaderAsync(w, size, opcode, Encrypt, cancellationToken);
     }
 }

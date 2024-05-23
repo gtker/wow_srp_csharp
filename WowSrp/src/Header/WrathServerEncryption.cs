@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using WowSrp.Internal;
 
 namespace WowSrp.Header
@@ -19,8 +22,40 @@ namespace WowSrp.Header
                 HeaderImplementation.DropAmount);
         }
 
-        void IEncrypter.Encrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
+        /// <inheritdoc cref="IEncrypter.Encrypt" />
+        public void Encrypt(Span<byte> data) => _arc4.ApplyKeyStream(data);
 
         bool IServerEncrypter.IsWrath() => true;
+
+        /// <inheritdoc cref="IServerEncrypter.CreateServerHeader" />
+        public byte[] CreateServerHeader(uint size, uint opcode) =>
+            HeaderImplementations.CreateServerHeader(size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+
+        /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(Span&lt;byte&gt;, uint, uint)" />
+        public void WriteServerHeader(Span<byte> w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+        }
+
+        /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(byte[], uint, uint)" />
+        public void WriteServerHeader(byte[] w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+        }
+
+        /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(Stream, uint, uint)" />
+        public void WriteServerHeader(Stream w, uint size, uint opcode)
+        {
+            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+        }
+
+        /// <inheritdoc cref="IServerEncrypter.WriteServerHeaderAsync(Stream, uint, uint, CancellationToken)" />
+        public async Task WriteServerHeaderAsync(Stream w, uint size, uint opcode,
+            CancellationToken cancellationToken = default)
+        {
+            await HeaderImplementations.WriteServerHeaderAsync(w, size, opcode, ((IServerEncrypter)this).IsWrath(),
+                    Encrypt, cancellationToken)
+                .ConfigureAwait(false);
+        }
     }
 }
