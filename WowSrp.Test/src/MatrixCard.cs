@@ -46,7 +46,7 @@ public class MatrixCard
             var seed = ulong.Parse(split[2]);
             var challengeCount = byte.Parse(split[3]);
             _ = TestUtils.StringToByteArray(split[4]);
-            var expected = new (byte, byte) [challengeCount];
+            var expected = new (byte, byte)[challengeCount];
             for (var i = 0; i < challengeCount; i++)
             {
                 var x = byte.Parse(split[5 + i * 2]);
