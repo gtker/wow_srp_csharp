@@ -29,10 +29,10 @@ namespace WowSrp.Header
         public HeaderData ReadClientHeader(Span<byte> span) => HeaderImplementations.ReadClientHeader(span, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeader(Stream)" />
-        public HeaderData ReadClientHeader(Stream r) => HeaderImplementations.ReadClientHeader(r, Decrypt);
+        public HeaderData ReadClientHeader(Stream stream) => HeaderImplementations.ReadClientHeader(stream, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeaderAsync(Stream, CancellationToken)" />
-        public Task<HeaderData> ReadClientHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
-            HeaderImplementations.ReadClientHeaderAsync(r, Decrypt, cancellationToken);
+        public Task<HeaderData> ReadClientHeaderAsync(Stream stream, CancellationToken cancellationToken = default) =>
+            HeaderImplementations.ReadClientHeaderAsync(stream, Decrypt, cancellationToken);
     }
 }

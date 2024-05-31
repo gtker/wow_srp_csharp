@@ -1,8 +1,16 @@
+# 0.3.0 - RELEASEDATE
+
+## Changed
+
+* Renamed interface parameter names to `stream`, `buffer`, and `span` instead of `r`/`w`.
+
 # 0.2.0 - 2024-05-31
 
 ## Added
 
-* `NullCrypter` and `NullCrypterWrath` for reading unencrypted headers for [SMSG_AUTH_CHALENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html) and [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html).
+* `NullCrypter` and `NullCrypterWrath` for reading unencrypted headers
+  for [SMSG_AUTH_CHALENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html)
+  and [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html).
 
 # 0.1.3 - 2024-05-23
 

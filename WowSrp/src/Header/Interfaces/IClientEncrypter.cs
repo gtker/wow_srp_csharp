@@ -19,22 +19,22 @@ namespace WowSrp.Header
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        void WriteClientHeader(Span<byte> w, uint size, uint opcode);
+        void WriteClientHeader(Span<byte> span, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        void WriteClientHeader(byte[] w, uint size, uint opcode);
+        void WriteClientHeader(byte[] buffer, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        void WriteClientHeader(Stream w, uint size, uint opcode);
+        void WriteClientHeader(Stream stream, uint size, uint opcode);
 
         /// <summary>
         ///     Writes a client header.
         /// </summary>
-        Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
+        Task WriteClientHeaderAsync(Stream stream, uint size, uint opcode,
             CancellationToken cancellationToken = default);
     }
 }

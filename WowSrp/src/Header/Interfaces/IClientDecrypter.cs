@@ -19,12 +19,12 @@ namespace WowSrp.Header
         /// <summary>
         ///     Reads a client header.
         /// </summary>
-        public HeaderData ReadClientHeader(Stream r) => HeaderImplementations.ReadClientHeader(r, Decrypt);
+        public HeaderData ReadClientHeader(Stream stream) => HeaderImplementations.ReadClientHeader(stream, Decrypt);
 
         /// <summary>
         ///     Reads a client header.
         /// </summary>
-        public Task<HeaderData> ReadClientHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
-            HeaderImplementations.ReadClientHeaderAsync(r, Decrypt, cancellationToken);
+        public Task<HeaderData> ReadClientHeaderAsync(Stream stream, CancellationToken cancellationToken = default) =>
+            HeaderImplementations.ReadClientHeaderAsync(stream, Decrypt, cancellationToken);
     }
 }

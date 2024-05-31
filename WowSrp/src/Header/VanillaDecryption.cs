@@ -34,11 +34,11 @@ namespace WowSrp.Header
         public HeaderData ReadClientHeader(Span<byte> span) => HeaderImplementations.ReadClientHeader(span, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeader(Stream)" />
-        public HeaderData ReadClientHeader(Stream r) => HeaderImplementations.ReadClientHeader(r, Decrypt);
+        public HeaderData ReadClientHeader(Stream stream) => HeaderImplementations.ReadClientHeader(stream, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeaderAsync(Stream, CancellationToken)" />
-        public Task<HeaderData> ReadClientHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
-            HeaderImplementations.ReadClientHeaderAsync(r, Decrypt, cancellationToken);
+        public Task<HeaderData> ReadClientHeaderAsync(Stream stream, CancellationToken cancellationToken = default) =>
+            HeaderImplementations.ReadClientHeaderAsync(stream, Decrypt, cancellationToken);
 
         bool IServerDecrypter.IsWrath() => false;
 
@@ -47,13 +47,15 @@ namespace WowSrp.Header
             HeaderImplementations.ReadServerHeader(span, ((IServerDecrypter)this).IsWrath(), Decrypt);
 
         /// <inheritdoc cref="IServerDecrypter.ReadServerHeader(Stream)" />
-        public HeaderData ReadServerHeader(Stream r) => HeaderImplementations.ReadServerHeader(r, ((IServerDecrypter)
-            this).IsWrath(), Decrypt);
+        public HeaderData ReadServerHeader(Stream stream) => HeaderImplementations.ReadServerHeader(stream,
+            ((IServerDecrypter)
+                this).IsWrath(), Decrypt);
 
         /// <inheritdoc cref="IServerDecrypter.ReadServerHeaderAsync(Stream, CancellationToken)" />
-        public async Task<HeaderData> ReadServerHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
+        public async Task<HeaderData> ReadServerHeaderAsync(Stream stream,
+            CancellationToken cancellationToken = default) =>
             await HeaderImplementations
-                .ReadServerHeaderAsync(r, ((IServerDecrypter)this).IsWrath(), Decrypt, cancellationToken)
+                .ReadServerHeaderAsync(stream, ((IServerDecrypter)this).IsWrath(), Decrypt, cancellationToken)
                 .ConfigureAwait(false);
     }
 }

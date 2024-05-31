@@ -20,29 +20,29 @@ namespace WowSrp.Header
             return b;
         }
 
-        public static void WriteClientHeader(Span<byte> w, uint size, uint opcode, Encrypt encrypt)
+        public static void WriteClientHeader(Span<byte> span, uint size, uint opcode, Encrypt encrypt)
         {
             var b = CreateClientHeader(size, opcode, encrypt);
-            b.CopyTo(w);
+            b.CopyTo(span);
         }
 
-        public static void WriteClientHeader(byte[] w, uint size, uint opcode, Encrypt encrypt)
+        public static void WriteClientHeader(byte[] buffer, uint size, uint opcode, Encrypt encrypt)
         {
             var b = CreateClientHeader(size, opcode, encrypt);
-            b.CopyTo(w, 0);
+            b.CopyTo(buffer, 0);
         }
 
-        public static void WriteClientHeader(Stream w, uint size, uint opcode, Encrypt encrypt)
+        public static void WriteClientHeader(Stream stream, uint size, uint opcode, Encrypt encrypt)
         {
             var b = CreateClientHeader(size, opcode, encrypt);
-            w.Write(b);
+            stream.Write(b);
         }
 
-        public static async Task WriteClientHeaderAsync(Stream w, uint size, uint opcode, Encrypt encrypt,
+        public static async Task WriteClientHeaderAsync(Stream stream, uint size, uint opcode, Encrypt encrypt,
             CancellationToken cancellationToken = default)
         {
             var b = CreateClientHeader(size, opcode, encrypt);
-            await w.WriteAsync(b, cancellationToken).ConfigureAwait(false);
+            await stream.WriteAsync(b, cancellationToken).ConfigureAwait(false);
         }
 
         public static HeaderData ReadClientHeader(Span<byte> span, Decrypt decrypt)
@@ -53,18 +53,18 @@ namespace WowSrp.Header
                 newSpan[Constants.ClientSizeLength..]);
         }
 
-        public static HeaderData ReadClientHeader(Stream r, Decrypt decrypt)
+        public static HeaderData ReadClientHeader(Stream stream, Decrypt decrypt)
         {
             var header = new byte[Constants.ClientHeaderLength];
-            r.ReadUntilBufferFull(header);
+            stream.ReadUntilBufferFull(header);
             return ReadClientHeader(header, decrypt);
         }
 
-        public static async Task<HeaderData> ReadClientHeaderAsync(Stream r, Decrypt decrypt,
+        public static async Task<HeaderData> ReadClientHeaderAsync(Stream stream, Decrypt decrypt,
             CancellationToken cancellationToken = default)
         {
             var header = new byte[Constants.ClientHeaderLength];
-            await r.ReadUntilBufferFullAsync(header, cancellationToken).ConfigureAwait(false);
+            await stream.ReadUntilBufferFullAsync(header, cancellationToken).ConfigureAwait(false);
             return ReadClientHeader(header, decrypt);
         }
 
@@ -96,23 +96,23 @@ namespace WowSrp.Header
             return ReadUnencryptedHeader(newSpan);
         }
 
-        public static HeaderData ReadServerHeader(Stream r, bool isWrath, Decrypt decrypt)
+        public static HeaderData ReadServerHeader(Stream stream, bool isWrath, Decrypt decrypt)
         {
             if (!isWrath)
             {
                 var buf = new byte[Constants.ServerNormalHeaderLength];
-                r.ReadUntilBufferFull(buf);
+                stream.ReadUntilBufferFull(buf);
                 return ReadServerHeader(buf, isWrath, decrypt);
             }
 
             var firstByte = new byte[1];
 
-            r.ReadUntilBufferFull(firstByte);
+            stream.ReadUntilBufferFull(firstByte);
             decrypt(firstByte);
             var serverSizeLength = Utils.ServerSizeFieldLength(firstByte[0], isWrath);
 
             var remainingHeader = new byte[serverSizeLength + Constants.ServerOpcodeLength - 1];
-            r.ReadUntilBufferFull(remainingHeader);
+            stream.ReadUntilBufferFull(remainingHeader);
             decrypt(remainingHeader);
 
             Span<byte> header = stackalloc byte[serverSizeLength + Constants.ServerOpcodeLength];
@@ -123,24 +123,24 @@ namespace WowSrp.Header
             return ReadUnencryptedHeader(header);
         }
 
-        public static async Task<HeaderData> ReadServerHeaderAsync(Stream r, bool isWrath, Decrypt decrypt,
+        public static async Task<HeaderData> ReadServerHeaderAsync(Stream stream, bool isWrath, Decrypt decrypt,
             CancellationToken cancellationToken = default)
         {
             if (!isWrath)
             {
                 var buf = new byte[Constants.ServerNormalHeaderLength];
-                await r.ReadUntilBufferFullAsync(buf, cancellationToken).ConfigureAwait(false);
+                await stream.ReadUntilBufferFullAsync(buf, cancellationToken).ConfigureAwait(false);
                 return ReadServerHeader(buf, isWrath, decrypt);
             }
 
             var firstByte = new byte[1];
 
-            await r.ReadUntilBufferFullAsync(firstByte, cancellationToken).ConfigureAwait(false);
+            await stream.ReadUntilBufferFullAsync(firstByte, cancellationToken).ConfigureAwait(false);
             decrypt(firstByte);
             var serverSizeLength = Utils.ServerSizeFieldLength(firstByte[0], isWrath);
 
             var remainingHeader = new byte[serverSizeLength + Constants.ServerOpcodeLength - 1];
-            await r.ReadUntilBufferFullAsync(remainingHeader, cancellationToken).ConfigureAwait(false);
+            await stream.ReadUntilBufferFullAsync(remainingHeader, cancellationToken).ConfigureAwait(false);
             decrypt(remainingHeader);
 
             var header = new byte[serverSizeLength + Constants.ServerOpcodeLength];
@@ -169,29 +169,30 @@ namespace WowSrp.Header
             return b;
         }
 
-        public static void WriteServerHeader(Span<byte> w, uint size, uint opcode, bool isWrath, Encrypt encrypt)
+        public static void WriteServerHeader(Span<byte> span, uint size, uint opcode, bool isWrath, Encrypt encrypt)
         {
             var b = CreateServerHeader(size, opcode, isWrath, encrypt);
-            b.CopyTo(w);
+            b.CopyTo(span);
         }
 
-        public static void WriteServerHeader(byte[] w, uint size, uint opcode, bool isWrath, Encrypt encrypt)
+        public static void WriteServerHeader(byte[] buffer, uint size, uint opcode, bool isWrath, Encrypt encrypt)
         {
             var b = CreateServerHeader(size, opcode, isWrath, encrypt);
-            b.CopyTo(w, 0);
+            b.CopyTo(buffer, 0);
         }
 
-        public static void WriteServerHeader(Stream w, uint size, uint opcode, bool isWrath, Encrypt encrypt)
+        public static void WriteServerHeader(Stream stream, uint size, uint opcode, bool isWrath, Encrypt encrypt)
         {
             var b = CreateServerHeader(size, opcode, isWrath, encrypt);
-            w.Write(b);
+            stream.Write(b);
         }
 
-        public static async Task WriteServerHeaderAsync(Stream w, uint size, uint opcode, bool isWrath, Encrypt encrypt,
+        public static async Task WriteServerHeaderAsync(Stream stream, uint size, uint opcode, bool isWrath,
+            Encrypt encrypt,
             CancellationToken cancellationToken = default)
         {
             var b = CreateServerHeader(size, opcode, isWrath, encrypt);
-            await w.WriteAsync(b, cancellationToken).ConfigureAwait(false);
+            await stream.WriteAsync(b, cancellationToken).ConfigureAwait(false);
         }
 
         internal delegate void Encrypt(Span<byte> data);

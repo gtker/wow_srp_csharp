@@ -15,38 +15,38 @@ namespace WowSrp.Header
         public HeaderData ReadClientHeader(Span<byte> span) => HeaderImplementations.ReadClientHeader(span, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeader(Stream)" />
-        public HeaderData ReadClientHeader(Stream r) => HeaderImplementations.ReadClientHeader(r, Decrypt);
+        public HeaderData ReadClientHeader(Stream stream) => HeaderImplementations.ReadClientHeader(stream, Decrypt);
 
         /// <inheritdoc cref="IClientDecrypter.ReadClientHeaderAsync(Stream, CancellationToken)" />
-        public Task<HeaderData> ReadClientHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
-            HeaderImplementations.ReadClientHeaderAsync(r, Decrypt, cancellationToken);
+        public Task<HeaderData> ReadClientHeaderAsync(Stream stream, CancellationToken cancellationToken = default) =>
+            HeaderImplementations.ReadClientHeaderAsync(stream, Decrypt, cancellationToken);
 
         /// <inheritdoc cref="IClientEncrypter.CreateClientHeader" />
         public byte[] CreateClientHeader(uint size, uint opcode) =>
             HeaderImplementations.CreateClientHeader(size, opcode, Encrypt);
 
         /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(byte[], uint, uint)" />
-        public void WriteClientHeader(byte[] w, uint size, uint opcode)
+        public void WriteClientHeader(byte[] buffer, uint size, uint opcode)
         {
-            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+            HeaderImplementations.WriteClientHeader(buffer, size, opcode, Encrypt);
         }
 
         /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(Span&lt;byte&gt;, uint, uint)" />
-        public void WriteClientHeader(Span<byte> w, uint size, uint opcode)
+        public void WriteClientHeader(Span<byte> span, uint size, uint opcode)
         {
-            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+            HeaderImplementations.WriteClientHeader(span, size, opcode, Encrypt);
         }
 
         /// <inheritdoc cref="IClientEncrypter.WriteClientHeader(Stream, uint, uint)" />
-        public void WriteClientHeader(Stream w, uint size, uint opcode)
+        public void WriteClientHeader(Stream stream, uint size, uint opcode)
         {
-            HeaderImplementations.WriteClientHeader(w, size, opcode, Encrypt);
+            HeaderImplementations.WriteClientHeader(stream, size, opcode, Encrypt);
         }
 
         /// <inheritdoc cref="IClientEncrypter.WriteClientHeaderAsync(Stream, uint, uint, CancellationToken)" />
-        public Task WriteClientHeaderAsync(Stream w, uint size, uint opcode,
+        public Task WriteClientHeaderAsync(Stream stream, uint size, uint opcode,
             CancellationToken cancellationToken = default) =>
-            HeaderImplementations.WriteClientHeaderAsync(w, size, opcode, Encrypt, cancellationToken);
+            HeaderImplementations.WriteClientHeaderAsync(stream, size, opcode, Encrypt, cancellationToken);
 
         bool IServerDecrypter.IsWrath() => true;
 
@@ -61,13 +61,15 @@ namespace WowSrp.Header
             HeaderImplementations.ReadServerHeader(span, ((IServerDecrypter)this).IsWrath(), Decrypt);
 
         /// <inheritdoc cref="IServerDecrypter.ReadServerHeader(Stream)" />
-        public HeaderData ReadServerHeader(Stream r) => HeaderImplementations.ReadServerHeader(r, ((IServerDecrypter)
-            this).IsWrath(), Decrypt);
+        public HeaderData ReadServerHeader(Stream stream) => HeaderImplementations.ReadServerHeader(stream,
+            ((IServerDecrypter)
+                this).IsWrath(), Decrypt);
 
         /// <inheritdoc cref="IServerDecrypter.ReadServerHeaderAsync(Stream, CancellationToken)" />
-        public async Task<HeaderData> ReadServerHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
+        public async Task<HeaderData> ReadServerHeaderAsync(Stream stream,
+            CancellationToken cancellationToken = default) =>
             await HeaderImplementations
-                .ReadServerHeaderAsync(r, ((IServerDecrypter)this).IsWrath(), Decrypt, cancellationToken)
+                .ReadServerHeaderAsync(stream, ((IServerDecrypter)this).IsWrath(), Decrypt, cancellationToken)
                 .ConfigureAwait(false);
 
         bool IServerEncrypter.IsWrath() => true;
@@ -78,9 +80,9 @@ namespace WowSrp.Header
             HeaderImplementations.CreateServerHeader(size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
 
         /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(byte[], uint, uint)" />
-        public void WriteServerHeader(byte[] w, uint size, uint opcode)
+        public void WriteServerHeader(byte[] buffer, uint size, uint opcode)
         {
-            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+            HeaderImplementations.WriteServerHeader(buffer, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
         }
 
         /// <inheritdoc cref="IEncrypter.Encrypt" />
@@ -90,22 +92,22 @@ namespace WowSrp.Header
         }
 
         /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(Span&lt;byte&gt;, uint, uint)" />
-        public void WriteServerHeader(Span<byte> w, uint size, uint opcode)
+        public void WriteServerHeader(Span<byte> span, uint size, uint opcode)
         {
-            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+            HeaderImplementations.WriteServerHeader(span, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
         }
 
         /// <inheritdoc cref="IServerEncrypter.WriteServerHeader(Stream, uint, uint)" />
-        public void WriteServerHeader(Stream w, uint size, uint opcode)
+        public void WriteServerHeader(Stream stream, uint size, uint opcode)
         {
-            HeaderImplementations.WriteServerHeader(w, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
+            HeaderImplementations.WriteServerHeader(stream, size, opcode, ((IServerEncrypter)this).IsWrath(), Encrypt);
         }
 
         /// <inheritdoc cref="IServerEncrypter.WriteServerHeaderAsync(Stream, uint, uint, CancellationToken)" />
-        public async Task WriteServerHeaderAsync(Stream w, uint size, uint opcode,
+        public async Task WriteServerHeaderAsync(Stream stream, uint size, uint opcode,
             CancellationToken cancellationToken = default)
         {
-            await HeaderImplementations.WriteServerHeaderAsync(w, size, opcode, ((IServerEncrypter)this).IsWrath(),
+            await HeaderImplementations.WriteServerHeaderAsync(stream, size, opcode, ((IServerEncrypter)this).IsWrath(),
                     Encrypt, cancellationToken)
                 .ConfigureAwait(false);
         }

@@ -22,13 +22,15 @@ namespace WowSrp.Header
         /// <summary>
         ///     Read a server header.
         /// </summary>
-        public HeaderData ReadServerHeader(Stream r) => HeaderImplementations.ReadServerHeader(r, IsWrath(), Decrypt);
+        public HeaderData ReadServerHeader(Stream stream) =>
+            HeaderImplementations.ReadServerHeader(stream, IsWrath(), Decrypt);
 
         /// <summary>
         ///     Read a server header.
         /// </summary>
-        public async Task<HeaderData> ReadServerHeaderAsync(Stream r, CancellationToken cancellationToken = default) =>
-            await HeaderImplementations.ReadServerHeaderAsync(r, IsWrath(), Decrypt, cancellationToken)
+        public async Task<HeaderData> ReadServerHeaderAsync(Stream stream,
+            CancellationToken cancellationToken = default) =>
+            await HeaderImplementations.ReadServerHeaderAsync(stream, IsWrath(), Decrypt, cancellationToken)
                 .ConfigureAwait(false);
     }
 }
