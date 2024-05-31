@@ -117,6 +117,13 @@ var client_proof = reconnectData.ClientProof;
 
 ### Server
 
+Instantiate a `NullCrypter` (Vanilla/TBC) or `NullCrypterWrath` (Wrath) for the first message, then use `Vanilla`/`Tbc`/`Wrath` for encrypted headers.
+
+```csharp
+var encrypter = new NullCrypter();
+encrypter.WriteServerHeader(stream, size, opcode);
+```
+
 First, create a random seed from `WorldProof.RandomSeed()` and send it to the client in [SMSG_AUTH_CHALLENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html).
 
 After receiving [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html) from the client, instantiate the encrypter and decrypter for your version.
