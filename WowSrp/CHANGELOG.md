@@ -1,4 +1,4 @@
-# 0.3.0 - RELEASEDATE
+# 0.3.0 - 2024-06-01
 
 ## Changed
 
