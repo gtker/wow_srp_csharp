@@ -3,6 +3,7 @@
 ## Changed
 
 * Renamed interface parameter names to `stream`, `buffer`, and `span` instead of `r`/`w`.
+* Made `HeaderData` not `readonly`.
 
 # 0.2.0 - 2024-05-31
 
