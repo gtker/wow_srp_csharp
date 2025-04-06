@@ -17,6 +17,8 @@ Install the library from [nuget](https://www.nuget.org/packages/WowSrp):
 dotnet add package WowSrp
 ```
 
+A full example [can be found in the `wow_messages_csharp` repo](https://github.com/gtker/wow_messages_csharp/tree/main/ServerTest) which also contains a library for the message protocol.
+
 ## Usage
 
 ### Authentication
