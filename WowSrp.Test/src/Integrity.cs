@@ -54,7 +54,7 @@ public class IntegrityTest
     [Test]
     public void Mac()
     {
-        var contents = File.ReadAllLines("./tests/integrity/windows_regression.txt");
+        var contents = File.ReadAllLines("./tests/integrity/mac_regression.txt");
         Assert.That(contents, Is.Not.Empty);
 
         foreach (var line in contents)
